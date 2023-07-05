@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 
 const PIECE_SIZE: usize = 64;
 const BOARD_SIZE: usize = 8;
@@ -11,6 +11,12 @@ enum Piece {
     Pawn,
     Bishop,
     Rook,
+}
+
+#[derive(Component)]
+struct Tile {
+    x: usize,
+    y: usize,
 }
 
 #[derive(Resource)]
@@ -38,6 +44,7 @@ fn main() {
         )
         .add_startup_system(load_assets)
         .add_startup_system(spawn_camera)
+        .add_startup_system(generate_board)
         .run();
 }
 
@@ -68,6 +75,40 @@ fn load_assets(
     });
 }
 
-fn spawn_camera(mut commands: Commands) {
-    commands.spawn(Camera2dBundle { ..default() });
+fn spawn_camera(mut commands: Commands, window: Query<&Window, With<PrimaryWindow>>) {
+    let window = window.get_single().unwrap();
+
+    commands.spawn(Camera2dBundle {
+        transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
+        ..default()
+    });
+}
+
+fn generate_board(mut commands: Commands) {
+    for x in 0..BOARD_SIZE {
+        for y in 0..BOARD_SIZE {
+            let color = if (x % 2 == 1 && y % 2 != 1) || (x % 2 != 1 && y % 2 == 1) {
+                Color::LIME_GREEN
+            } else {
+                Color::GREEN
+            };
+
+            commands.spawn((
+                SpriteBundle {
+                    transform: Transform::from_xyz(
+                        (x * PIECE_SIZE + PIECE_SIZE / 2) as f32,
+                        (y * PIECE_SIZE + PIECE_SIZE / 2) as f32,
+                        0.0,
+                    ),
+                    sprite: Sprite {
+                        color,
+                        custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
+                        ..default()
+                    },
+                    ..default()
+                },
+                Tile { x, y },
+            ));
+        }
+    }
 }
