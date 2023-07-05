@@ -37,6 +37,7 @@ fn main() {
             }),
         )
         .add_startup_system(load_assets)
+        .add_startup_system(spawn_camera)
         .run();
 }
 
@@ -65,4 +66,8 @@ fn load_assets(
             (Piece::Rook, 6),
         ]),
     });
+}
+
+fn spawn_camera(mut commands: Commands) {
+    commands.spawn(Camera2dBundle { ..default() });
 }
