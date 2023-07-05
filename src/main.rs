@@ -1,6 +1,7 @@
 use bevy::{prelude::*, utils::HashMap};
 
 const PIECE_SIZE: usize = 64;
+const BOARD_SIZE: usize = 8;
 
 #[derive(PartialEq, Eq, Hash)]
 enum Piece {
@@ -20,7 +21,21 @@ struct GameAssets {
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(
+            DefaultPlugins.set(WindowPlugin {
+                primary_window: Some(Window {
+                    resolution: (
+                        (PIECE_SIZE * BOARD_SIZE) as f32,
+                        (PIECE_SIZE * BOARD_SIZE) as f32,
+                    )
+                        .into(),
+                    title: "Chess".to_string(),
+                    resizable: true,
+                    ..default()
+                }),
+                ..default()
+            }),
+        )
         .add_startup_system(load_assets)
         .run();
 }
