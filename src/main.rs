@@ -40,9 +40,18 @@ struct GameAssets {
 #[derive(Resource)]
 struct BoardPopulationDone(bool);
 
+#[derive(Resource)]
+struct CurrentTurn(Turn);
+
+enum Turn {
+    White,
+    Black,
+}
+
 fn main() {
     App::new()
         .insert_resource(BoardPopulationDone(false))
+        .insert_resource(CurrentTurn(Turn::White))
         .add_plugins(
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
