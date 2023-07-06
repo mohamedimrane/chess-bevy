@@ -146,6 +146,7 @@ fn populate_board(
 ) {
     if !population_done.0 {
         spawn_white_pieces(&game_assets, &mut commands);
+        spawn_black_pieces(&game_assets, &mut commands);
         population_done.0 = true;
     }
 }
@@ -253,6 +254,84 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
             2,
             game_assets.piece_atlas.clone(),
             game_assets.pieces[&Piece::Pawn],
+            commands,
+        );
+    }
+}
+
+fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
+    spawn_piece(
+        Piece::King,
+        4,
+        8,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::King] + 6,
+        commands,
+    );
+    spawn_piece(
+        Piece::Queen,
+        5,
+        8,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Queen] + 6,
+        commands,
+    );
+    spawn_piece(
+        Piece::Knight,
+        2,
+        8,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Knight] + 6,
+        commands,
+    );
+    spawn_piece(
+        Piece::Knight,
+        7,
+        8,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Knight] + 6,
+        commands,
+    );
+    spawn_piece(
+        Piece::Bishop,
+        3,
+        8,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Bishop] + 6,
+        commands,
+    );
+    spawn_piece(
+        Piece::Bishop,
+        6,
+        8,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Bishop] + 6,
+        commands,
+    );
+    spawn_piece(
+        Piece::Rook,
+        1,
+        8,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Rook] + 6,
+        commands,
+    );
+    spawn_piece(
+        Piece::Rook,
+        8,
+        8,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Rook] + 6,
+        commands,
+    );
+
+    for i in 1..=BOARD_SIZE {
+        spawn_piece(
+            Piece::Pawn,
+            i,
+            7,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Pawn] + 6,
             commands,
         );
     }
