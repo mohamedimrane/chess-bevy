@@ -70,12 +70,12 @@ fn load_assets(
     commands.insert_resource(GameAssets {
         piece_atlas: texture_atlases.add(piece_atlas),
         pieces: HashMap::from([
-            (Piece::King, 1),
-            (Piece::Queen, 2),
-            (Piece::Knight, 3),
-            (Piece::Pawn, 4),
-            (Piece::Bishop, 5),
-            (Piece::Rook, 6),
+            (Piece::King, 0),
+            (Piece::Queen, 1),
+            (Piece::Knight, 2),
+            (Piece::Pawn, 3),
+            (Piece::Bishop, 4),
+            (Piece::Rook, 5),
         ]),
     });
 }
