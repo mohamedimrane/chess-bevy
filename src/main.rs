@@ -145,20 +145,81 @@ fn populate_board(
     game_assets: Res<GameAssets>,
 ) {
     if !population_done.0 {
-        commands.spawn((
-            SpriteSheetBundle {
-                sprite: TextureAtlasSprite {
-                    custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
-                    index: game_assets.pieces[&Piece::Pawn],
-                    ..default()
-                },
-                texture_atlas: game_assets.piece_atlas.clone(),
-                // transform: Transform::from_xyz((PIECE_SIZE / 2) as f32, (PIECE_SIZE / 2) as f32, 0.0),
-                ..default()
-            },
-            BoardPosition::new(1, 1),
-            Piece::Pawn,
-        ));
+        spawn_piece(
+            Piece::King,
+            5,
+            1,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::King],
+            &mut commands,
+        );
+        spawn_piece(
+            Piece::Queen,
+            4,
+            1,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Queen],
+            &mut commands,
+        );
+        spawn_piece(
+            Piece::Knight,
+            2,
+            1,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Knight],
+            &mut commands,
+        );
+        spawn_piece(
+            Piece::Knight,
+            7,
+            1,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Knight],
+            &mut commands,
+        );
+        spawn_piece(
+            Piece::Bishop,
+            3,
+            1,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Bishop],
+            &mut commands,
+        );
+        spawn_piece(
+            Piece::Bishop,
+            6,
+            1,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Bishop],
+            &mut commands,
+        );
+        spawn_piece(
+            Piece::Rook,
+            1,
+            1,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Rook],
+            &mut commands,
+        );
+        spawn_piece(
+            Piece::Rook,
+            8,
+            1,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Rook],
+            &mut commands,
+        );
+
+        for i in 1..=BOARD_SIZE {
+            spawn_piece(
+                Piece::Pawn,
+                i,
+                2,
+                game_assets.piece_atlas.clone(),
+                game_assets.pieces[&Piece::Pawn],
+                &mut commands,
+            );
+        }
 
         population_done.0 = true;
     }
@@ -169,4 +230,27 @@ fn update_pieces_positions(mut pieces: Query<(&mut Transform, &BoardPosition), W
         transform.translation.x = ((position.x - 1) * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
         transform.translation.y = ((position.y - 1) * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
     }
+}
+
+fn spawn_piece(
+    piece_type: Piece,
+    x: usize,
+    y: usize,
+    texture_atlas: Handle<TextureAtlas>,
+    index: usize,
+    commands: &mut Commands,
+) {
+    commands.spawn((
+        SpriteSheetBundle {
+            sprite: TextureAtlasSprite {
+                custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
+                index,
+                ..default()
+            },
+            texture_atlas,
+            ..default()
+        },
+        BoardPosition::new(x, y),
+        piece_type,
+    ));
 }
