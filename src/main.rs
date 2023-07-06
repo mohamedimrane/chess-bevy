@@ -145,82 +145,7 @@ fn populate_board(
     game_assets: Res<GameAssets>,
 ) {
     if !population_done.0 {
-        spawn_piece(
-            Piece::King,
-            5,
-            1,
-            game_assets.piece_atlas.clone(),
-            game_assets.pieces[&Piece::King],
-            &mut commands,
-        );
-        spawn_piece(
-            Piece::Queen,
-            4,
-            1,
-            game_assets.piece_atlas.clone(),
-            game_assets.pieces[&Piece::Queen],
-            &mut commands,
-        );
-        spawn_piece(
-            Piece::Knight,
-            2,
-            1,
-            game_assets.piece_atlas.clone(),
-            game_assets.pieces[&Piece::Knight],
-            &mut commands,
-        );
-        spawn_piece(
-            Piece::Knight,
-            7,
-            1,
-            game_assets.piece_atlas.clone(),
-            game_assets.pieces[&Piece::Knight],
-            &mut commands,
-        );
-        spawn_piece(
-            Piece::Bishop,
-            3,
-            1,
-            game_assets.piece_atlas.clone(),
-            game_assets.pieces[&Piece::Bishop],
-            &mut commands,
-        );
-        spawn_piece(
-            Piece::Bishop,
-            6,
-            1,
-            game_assets.piece_atlas.clone(),
-            game_assets.pieces[&Piece::Bishop],
-            &mut commands,
-        );
-        spawn_piece(
-            Piece::Rook,
-            1,
-            1,
-            game_assets.piece_atlas.clone(),
-            game_assets.pieces[&Piece::Rook],
-            &mut commands,
-        );
-        spawn_piece(
-            Piece::Rook,
-            8,
-            1,
-            game_assets.piece_atlas.clone(),
-            game_assets.pieces[&Piece::Rook],
-            &mut commands,
-        );
-
-        for i in 1..=BOARD_SIZE {
-            spawn_piece(
-                Piece::Pawn,
-                i,
-                2,
-                game_assets.piece_atlas.clone(),
-                game_assets.pieces[&Piece::Pawn],
-                &mut commands,
-            );
-        }
-
+        spawn_white_pieces(&game_assets, &mut commands);
         population_done.0 = true;
     }
 }
@@ -253,4 +178,82 @@ fn spawn_piece(
         BoardPosition::new(x, y),
         piece_type,
     ));
+}
+
+fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
+    spawn_piece(
+        Piece::King,
+        5,
+        1,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::King],
+        commands,
+    );
+    spawn_piece(
+        Piece::Queen,
+        4,
+        1,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Queen],
+        commands,
+    );
+    spawn_piece(
+        Piece::Knight,
+        2,
+        1,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Knight],
+        commands,
+    );
+    spawn_piece(
+        Piece::Knight,
+        7,
+        1,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Knight],
+        commands,
+    );
+    spawn_piece(
+        Piece::Bishop,
+        3,
+        1,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Bishop],
+        commands,
+    );
+    spawn_piece(
+        Piece::Bishop,
+        6,
+        1,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Bishop],
+        commands,
+    );
+    spawn_piece(
+        Piece::Rook,
+        1,
+        1,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Rook],
+        commands,
+    );
+    spawn_piece(
+        Piece::Rook,
+        8,
+        1,
+        game_assets.piece_atlas.clone(),
+        game_assets.pieces[&Piece::Rook],
+        commands,
+    );
+
+    for i in 1..=BOARD_SIZE {
+        spawn_piece(
+            Piece::Pawn,
+            i,
+            2,
+            game_assets.piece_atlas.clone(),
+            game_assets.pieces[&Piece::Pawn],
+            commands,
+        );
+    }
 }
