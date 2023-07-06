@@ -3,7 +3,7 @@ use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 const PIECE_SIZE: usize = 60;
 const BOARD_SIZE: usize = 8;
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(Component, PartialEq, Eq, Hash)]
 enum Piece {
     King,
     Queen,
@@ -17,6 +17,18 @@ enum Piece {
 struct Tile {
     x: usize,
     y: usize,
+}
+
+#[derive(Component)]
+struct BoardPosition {
+    x: usize,
+    y: usize,
+}
+
+impl BoardPosition {
+    fn new(x: usize, y: usize) -> Self {
+        Self { x, y }
+    }
 }
 
 #[derive(Resource)]
@@ -50,6 +62,7 @@ fn main() {
         .add_startup_system(spawn_camera)
         .add_startup_system(generate_board)
         .add_system(populate_board)
+        .add_system(update_pieces_positions)
         .run();
 }
 
@@ -132,17 +145,28 @@ fn populate_board(
     game_assets: Res<GameAssets>,
 ) {
     if !population_done.0 {
-        commands.spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite {
-                custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
-                index: game_assets.pieces[&Piece::Pawn],
+        commands.spawn((
+            SpriteSheetBundle {
+                sprite: TextureAtlasSprite {
+                    custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
+                    index: game_assets.pieces[&Piece::Pawn],
+                    ..default()
+                },
+                texture_atlas: game_assets.piece_atlas.clone(),
+                // transform: Transform::from_xyz((PIECE_SIZE / 2) as f32, (PIECE_SIZE / 2) as f32, 0.0),
                 ..default()
             },
-            texture_atlas: game_assets.piece_atlas.clone(),
-            transform: Transform::from_xyz((PIECE_SIZE / 2) as f32, (PIECE_SIZE / 2) as f32, 0.0),
-            ..default()
-        });
+            BoardPosition::new(1, 1),
+            Piece::Pawn,
+        ));
 
         population_done.0 = true;
+    }
+}
+
+fn update_pieces_positions(mut pieces: Query<(&mut Transform, &BoardPosition), With<Piece>>) {
+    for (mut transform, position) in pieces.iter_mut() {
+        transform.translation.x = ((position.x - 1) * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
+        transform.translation.y = ((position.y - 1) * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
     }
 }
