@@ -25,8 +25,12 @@ struct GameAssets {
     pieces: HashMap<Piece, usize>,
 }
 
+#[derive(Resource)]
+struct BoardPopulationDone(bool);
+
 fn main() {
     App::new()
+        .insert_resource(BoardPopulationDone(false))
         .add_plugins(
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
@@ -45,6 +49,7 @@ fn main() {
         .add_startup_system(load_assets)
         .add_startup_system(spawn_camera)
         .add_startup_system(generate_board)
+        .add_system(populate_board)
         .run();
 }
 
@@ -118,5 +123,26 @@ fn generate_board(mut commands: Commands) {
 
             commands.entity(board).add_child(piece);
         }
+    }
+}
+
+fn populate_board(
+    mut commands: Commands,
+    mut population_done: ResMut<BoardPopulationDone>,
+    game_assets: Res<GameAssets>,
+) {
+    if !population_done.0 {
+        commands.spawn(SpriteSheetBundle {
+            sprite: TextureAtlasSprite {
+                custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
+                index: game_assets.pieces[&Piece::Pawn],
+                ..default()
+            },
+            texture_atlas: game_assets.piece_atlas.clone(),
+            transform: Transform::from_xyz((PIECE_SIZE / 2) as f32, (PIECE_SIZE / 2) as f32, 0.0),
+            ..default()
+        });
+
+        population_done.0 = true;
     }
 }
