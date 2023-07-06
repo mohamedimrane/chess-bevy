@@ -1,6 +1,6 @@
 use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 
-const PIECE_SIZE: usize = 64;
+const PIECE_SIZE: usize = 60;
 const BOARD_SIZE: usize = 8;
 
 #[derive(PartialEq, Eq, Hash)]
