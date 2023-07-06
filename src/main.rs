@@ -85,6 +85,10 @@ fn spawn_camera(mut commands: Commands, window: Query<&Window, With<PrimaryWindo
 }
 
 fn generate_board(mut commands: Commands) {
+    let board = commands
+        .spawn((TransformBundle::default(), VisibilityBundle::default()))
+        .id();
+
     for x in 0..BOARD_SIZE {
         for y in 0..BOARD_SIZE {
             let color = if (x % 2 == 1 && y % 2 != 1) || (x % 2 != 1 && y % 2 == 1) {
@@ -93,22 +97,26 @@ fn generate_board(mut commands: Commands) {
                 Color::GREEN
             };
 
-            commands.spawn((
-                SpriteBundle {
-                    transform: Transform::from_xyz(
-                        (x * PIECE_SIZE + PIECE_SIZE / 2) as f32,
-                        (y * PIECE_SIZE + PIECE_SIZE / 2) as f32,
-                        0.0,
-                    ),
-                    sprite: Sprite {
-                        color,
-                        custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
+            let piece = commands
+                .spawn((
+                    SpriteBundle {
+                        transform: Transform::from_xyz(
+                            (x * PIECE_SIZE + PIECE_SIZE / 2) as f32,
+                            (y * PIECE_SIZE + PIECE_SIZE / 2) as f32,
+                            0.0,
+                        ),
+                        sprite: Sprite {
+                            color,
+                            custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
+                            ..default()
+                        },
                         ..default()
                     },
-                    ..default()
-                },
-                Tile { x, y },
-            ));
+                    Tile { x, y },
+                ))
+                .id();
+
+            commands.entity(board).add_child(piece);
         }
     }
 }
