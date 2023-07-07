@@ -31,6 +31,12 @@ impl BoardPosition {
     }
 }
 
+#[derive(Component)]
+enum Player {
+    White,
+    Black,
+}
+
 #[derive(Resource)]
 struct GameAssets {
     piece_atlas: Handle<TextureAtlas>,
@@ -41,12 +47,7 @@ struct GameAssets {
 struct BoardPopulationDone(bool);
 
 #[derive(Resource)]
-struct CurrentTurn(Turn);
-
-enum Turn {
-    White,
-    Black,
-}
+struct CurrentTurn(Player);
 
 #[derive(Resource)]
 struct SelectedPiece(Option<Entity>);
@@ -54,7 +55,7 @@ struct SelectedPiece(Option<Entity>);
 fn main() {
     App::new()
         .insert_resource(BoardPopulationDone(false))
-        .insert_resource(CurrentTurn(Turn::White))
+        .insert_resource(CurrentTurn(Player::White))
         .insert_resource(SelectedPiece(None))
         .add_plugins(
             DefaultPlugins.set(WindowPlugin {
@@ -208,6 +209,7 @@ fn to_board_posistion(pos: f32) -> f32 {
 
 fn spawn_piece(
     piece_type: Piece,
+    player: Player,
     x: usize,
     y: usize,
     texture_atlas: Handle<TextureAtlas>,
@@ -224,14 +226,16 @@ fn spawn_piece(
             texture_atlas,
             ..default()
         },
-        BoardPosition::new(x, y),
         piece_type,
+        player,
+        BoardPosition::new(x, y),
     ));
 }
 
 fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     spawn_piece(
         Piece::King,
+        Player::White,
         4,
         0,
         game_assets.piece_atlas.clone(),
@@ -240,6 +244,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Queen,
+        Player::White,
         3,
         0,
         game_assets.piece_atlas.clone(),
@@ -248,6 +253,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Knight,
+        Player::White,
         1,
         0,
         game_assets.piece_atlas.clone(),
@@ -256,6 +262,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Knight,
+        Player::White,
         6,
         0,
         game_assets.piece_atlas.clone(),
@@ -264,6 +271,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Bishop,
+        Player::White,
         2,
         0,
         game_assets.piece_atlas.clone(),
@@ -272,6 +280,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Bishop,
+        Player::White,
         5,
         0,
         game_assets.piece_atlas.clone(),
@@ -280,6 +289,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Rook,
+        Player::White,
         0,
         0,
         game_assets.piece_atlas.clone(),
@@ -288,6 +298,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Rook,
+        Player::White,
         7,
         0,
         game_assets.piece_atlas.clone(),
@@ -298,6 +309,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     for i in 0..BOARD_SIZE {
         spawn_piece(
             Piece::Pawn,
+            Player::White,
             i,
             1,
             game_assets.piece_atlas.clone(),
@@ -310,6 +322,7 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
 fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     spawn_piece(
         Piece::King,
+        Player::Black,
         3,
         7,
         game_assets.piece_atlas.clone(),
@@ -318,6 +331,7 @@ fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Queen,
+        Player::Black,
         4,
         7,
         game_assets.piece_atlas.clone(),
@@ -326,6 +340,7 @@ fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Knight,
+        Player::Black,
         1,
         7,
         game_assets.piece_atlas.clone(),
@@ -334,6 +349,7 @@ fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Knight,
+        Player::Black,
         6,
         7,
         game_assets.piece_atlas.clone(),
@@ -342,6 +358,7 @@ fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Bishop,
+        Player::Black,
         2,
         7,
         game_assets.piece_atlas.clone(),
@@ -350,6 +367,7 @@ fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Bishop,
+        Player::Black,
         5,
         7,
         game_assets.piece_atlas.clone(),
@@ -358,6 +376,7 @@ fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Rook,
+        Player::Black,
         0,
         7,
         game_assets.piece_atlas.clone(),
@@ -366,6 +385,7 @@ fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     );
     spawn_piece(
         Piece::Rook,
+        Player::Black,
         7,
         7,
         game_assets.piece_atlas.clone(),
@@ -376,6 +396,7 @@ fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     for i in 0..BOARD_SIZE {
         spawn_piece(
             Piece::Pawn,
+            Player::Black,
             i,
             6,
             game_assets.piece_atlas.clone(),
