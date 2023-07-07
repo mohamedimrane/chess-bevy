@@ -200,17 +200,18 @@ fn handle_piece_selection(
                     selected_piece.0 = None;
                 }
             }
-        }
-    }
-
-    for (tile_pos, mut tile_sprite) in tiles.iter_mut() {
-        if let Some(selected_piece_board_position) = selected_piece_board_position {
-            if tile_pos.x == selected_piece_board_position.x
-                && tile_pos.y == selected_piece_board_position.y
-            {
-                tile_sprite.color = Color::YELLOW;
-            } else {
-                tile_sprite.color = get_tile_color(tile_pos.x, tile_pos.y);
+            for (tile_pos, mut tile_sprite) in tiles.iter_mut() {
+                if let Some(selected_piece_board_position) = selected_piece_board_position {
+                    if tile_pos.x == selected_piece_board_position.x
+                        && tile_pos.y == selected_piece_board_position.y
+                    {
+                        tile_sprite.color = Color::YELLOW;
+                    } else {
+                        tile_sprite.color = get_tile_color(tile_pos.x, tile_pos.y);
+                    }
+                } else {
+                    tile_sprite.color = get_tile_color(tile_pos.x, tile_pos.y);
+                }
             }
         }
     }
