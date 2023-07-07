@@ -189,8 +189,8 @@ fn handle_piece_selection(
             .map(|ray| ray.origin.truncate())
         {
             for (entity, position) in pieces.iter() {
-                if position.x as f32 == (world_position.x.round() / PIECE_SIZE as f32).floor()
-                    && position.y as f32 == (world_position.y.round() / PIECE_SIZE as f32).floor()
+                if position.x as f32 == to_board_posistion(world_position.x)
+                    && position.y as f32 == to_board_posistion(world_position.y)
                 {
                     selected_piece.0 = Some(entity);
                     break;
@@ -200,6 +200,10 @@ fn handle_piece_selection(
             }
         }
     }
+}
+
+fn to_board_posistion(pos: f32) -> f32 {
+    (pos.round() / PIECE_SIZE as f32).floor()
 }
 
 fn spawn_piece(
