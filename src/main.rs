@@ -78,6 +78,7 @@ fn main() {
         .add_system(populate_board)
         .add_system(update_pieces_positions)
         .add_system(handle_piece_selection)
+        .add_system(display_possible_piece_movements)
         .run();
 }
 
@@ -212,6 +213,37 @@ fn handle_piece_selection(
                 tile_sprite.color = get_tile_color(tile_pos.x, tile_pos.y);
             }
         }
+    }
+}
+
+fn display_possible_piece_movements(
+    selected_piece: Res<SelectedPiece>,
+    pieces: Query<(&BoardPosition, &Player, &Piece)>,
+) {
+    if let Some(selected_piece_ent) = selected_piece.0 {
+        let mut white_pieces_positions = Vec::new();
+        let mut black_pieces_positions = Vec::new();
+
+        for (piece_board_position, piece_player, _) in pieces.iter() {
+            match piece_player {
+                &Player::White => {
+                    white_pieces_positions.push(piece_board_position);
+                }
+                &Player::Black => {
+                    black_pieces_positions.push(piece_board_position);
+                }
+            }
+        }
+
+        let selected_piece = pieces.get(selected_piece_ent).unwrap();
+
+        dbg!(get_possible_moves(
+            selected_piece.2,
+            selected_piece.0,
+            selected_piece.1,
+            white_pieces_positions,
+            black_pieces_positions
+        ));
     }
 }
 
