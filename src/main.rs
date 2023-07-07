@@ -31,7 +31,7 @@ impl BoardPosition {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, PartialEq, Eq)]
 enum Player {
     White,
     Black,
@@ -177,7 +177,8 @@ fn handle_piece_selection(
     buttons: Res<Input<MouseButton>>,
     window: Query<&Window, With<PrimaryWindow>>,
     camera: Query<(&Camera, &GlobalTransform)>,
-    pieces: Query<(Entity, &BoardPosition), With<Piece>>,
+    pieces: Query<(Entity, &BoardPosition, &Player), With<Piece>>,
+    current_player: Res<CurrentTurn>,
     mut selected_piece: ResMut<SelectedPiece>,
 ) {
     let window = window.get_single().unwrap();
@@ -189,8 +190,9 @@ fn handle_piece_selection(
             .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
             .map(|ray| ray.origin.truncate())
         {
-            for (entity, position) in pieces.iter() {
-                if position.x as f32 == to_board_posistion(world_position.x)
+            for (entity, position, player) in pieces.iter() {
+                if player == &current_player.0
+                    && position.x as f32 == to_board_posistion(world_position.x)
                     && position.y as f32 == to_board_posistion(world_position.y)
                 {
                     selected_piece.0 = Some(entity);
@@ -201,6 +203,7 @@ fn handle_piece_selection(
             }
         }
     }
+    dbg!(selected_piece.0);
 }
 
 fn to_board_posistion(pos: f32) -> f32 {
