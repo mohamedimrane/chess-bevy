@@ -272,7 +272,46 @@ fn get_possible_moves(
     match piece_type {
         Piece::King => {}
         Piece::Queen => {}
-        Piece::Knight => {}
+        Piece::Knight => {
+            let targets = [
+                (1.0, 2.0),
+                (-1.0, 2.0),
+                (2.0, 1.0),
+                (2.0, -1.0),
+                (1.0, -2.0),
+                (-1.0, -2.0),
+                (-2.0, 1.0),
+                (-2.0, -1.0),
+            ];
+
+            for i in 0..8 {
+                let target = (
+                    piece_position.x as f32 + targets[i].0,
+                    piece_position.y as f32 + targets[i].1,
+                );
+
+                if target.0 >= 0.0 && target.0 <= 7.0 && target.1 >= 0.0 && target.1 <= 7.0 {
+                    match piece_player {
+                        &Player::White => {
+                            if !white_pieces_positions.contains(&&BoardPosition::new(
+                                target.0 as usize,
+                                target.1 as usize,
+                            )) {
+                                possible_moves.push(target);
+                            }
+                        }
+                        &Player::Black => {
+                            if !black_pieces_positions.contains(&&BoardPosition::new(
+                                target.0 as usize,
+                                target.1 as usize,
+                            )) {
+                                possible_moves.push(target);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         Piece::Pawn => match piece_player {
             &Player::White => {
                 if !white_pieces_positions
