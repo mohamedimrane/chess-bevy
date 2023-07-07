@@ -19,7 +19,7 @@ struct Tile {
     y: usize,
 }
 
-#[derive(Component)]
+#[derive(Component, PartialEq, Eq)]
 struct BoardPosition {
     x: usize,
     y: usize,
@@ -225,6 +225,27 @@ fn get_tile_color(x: usize, y: usize) -> Color {
 
 fn to_board_posistion(pos: f32) -> f32 {
     (pos.round() / PIECE_SIZE as f32).floor()
+}
+
+fn get_possible_moves(
+    piece_type: &Piece,
+    piece_position: &BoardPosition,
+    piece_player: &Player,
+    white_pieces_positions: Vec<&BoardPosition>,
+    black_pieces_positions: Vec<&BoardPosition>,
+) -> Vec<(f32, f32)> {
+    let mut possible_moves = Vec::new();
+
+    match piece_type {
+        Piece::King => {}
+        Piece::Queen => {}
+        Piece::Knight => {}
+        Piece::Pawn => {}
+        Piece::Bishop => {}
+        Piece::Rook => {}
+    }
+
+    possible_moves
 }
 
 fn spawn_piece(
