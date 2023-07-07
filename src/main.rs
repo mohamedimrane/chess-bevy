@@ -193,12 +193,9 @@ fn handle_piece_selection(
                     && position.y as f32 == (world_position.y.round() / PIECE_SIZE as f32).floor()
                 {
                     selected_piece.0 = Some(entity);
-
-                    // dbg!(selected_piece.0);
                     break;
                 } else {
                     selected_piece.0 = None;
-                    // dbg!(selected_piece.0);
                 }
             }
         }
