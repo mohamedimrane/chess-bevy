@@ -167,8 +167,8 @@ fn populate_board(
 
 fn update_pieces_positions(mut pieces: Query<(&mut Transform, &BoardPosition), With<Piece>>) {
     for (mut transform, position) in pieces.iter_mut() {
-        transform.translation.x = ((position.x - 1) * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
-        transform.translation.y = ((position.y - 1) * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
+        transform.translation.x = (position.x * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
+        transform.translation.y = (position.y * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
     }
 }
 
@@ -189,9 +189,8 @@ fn handle_piece_selection(
             .map(|ray| ray.origin.truncate())
         {
             for (entity, position) in pieces.iter() {
-                if (position.x - 1) as f32 == (world_position.x.round() / PIECE_SIZE as f32).floor()
-                    && (position.y - 1) as f32
-                        == (world_position.y.round() / PIECE_SIZE as f32).floor()
+                if position.x as f32 == (world_position.x.round() / PIECE_SIZE as f32).floor()
+                    && position.y as f32 == (world_position.y.round() / PIECE_SIZE as f32).floor()
                 {
                     selected_piece.0 = Some(entity);
 
@@ -232,74 +231,74 @@ fn spawn_piece(
 fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     spawn_piece(
         Piece::King,
-        5,
-        1,
+        4,
+        0,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::King],
         commands,
     );
     spawn_piece(
         Piece::Queen,
-        4,
-        1,
+        3,
+        0,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Queen],
         commands,
     );
     spawn_piece(
         Piece::Knight,
-        2,
         1,
+        0,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Knight],
         commands,
     );
     spawn_piece(
         Piece::Knight,
-        7,
-        1,
+        6,
+        0,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Knight],
         commands,
     );
     spawn_piece(
         Piece::Bishop,
-        3,
-        1,
+        2,
+        0,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Bishop],
         commands,
     );
     spawn_piece(
         Piece::Bishop,
-        6,
-        1,
+        5,
+        0,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Bishop],
         commands,
     );
     spawn_piece(
         Piece::Rook,
-        1,
-        1,
+        0,
+        0,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Rook],
         commands,
     );
     spawn_piece(
         Piece::Rook,
-        8,
-        1,
+        7,
+        0,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Rook],
         commands,
     );
 
-    for i in 1..=BOARD_SIZE {
+    for i in 0..BOARD_SIZE {
         spawn_piece(
             Piece::Pawn,
             i,
-            2,
+            1,
             game_assets.piece_atlas.clone(),
             game_assets.pieces[&Piece::Pawn],
             commands,
@@ -310,74 +309,74 @@ fn spawn_white_pieces(game_assets: &GameAssets, commands: &mut Commands) {
 fn spawn_black_pieces(game_assets: &GameAssets, commands: &mut Commands) {
     spawn_piece(
         Piece::King,
-        4,
-        8,
+        3,
+        7,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::King] + 6,
         commands,
     );
     spawn_piece(
         Piece::Queen,
-        5,
-        8,
+        4,
+        7,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Queen] + 6,
         commands,
     );
     spawn_piece(
         Piece::Knight,
-        2,
-        8,
+        1,
+        7,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Knight] + 6,
         commands,
     );
     spawn_piece(
         Piece::Knight,
+        6,
         7,
-        8,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Knight] + 6,
         commands,
     );
     spawn_piece(
         Piece::Bishop,
-        3,
-        8,
+        2,
+        7,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Bishop] + 6,
         commands,
     );
     spawn_piece(
         Piece::Bishop,
-        6,
-        8,
+        5,
+        7,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Bishop] + 6,
         commands,
     );
     spawn_piece(
         Piece::Rook,
-        1,
-        8,
+        0,
+        7,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Rook] + 6,
         commands,
     );
     spawn_piece(
         Piece::Rook,
-        8,
-        8,
+        7,
+        7,
         game_assets.piece_atlas.clone(),
         game_assets.pieces[&Piece::Rook] + 6,
         commands,
     );
 
-    for i in 1..=BOARD_SIZE {
+    for i in 0..BOARD_SIZE {
         spawn_piece(
             Piece::Pawn,
             i,
-            7,
+            6,
             game_assets.piece_atlas.clone(),
             game_assets.pieces[&Piece::Pawn] + 6,
             commands,
