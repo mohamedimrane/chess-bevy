@@ -124,12 +124,6 @@ fn generate_board(mut commands: Commands) {
 
     for x in 0..BOARD_SIZE {
         for y in 0..BOARD_SIZE {
-            let color = if (x % 2 == 1 && y % 2 != 1) || (x % 2 != 1 && y % 2 == 1) {
-                Color::LIME_GREEN
-            } else {
-                Color::GREEN
-            };
-
             let piece = commands
                 .spawn((
                     SpriteBundle {
@@ -139,7 +133,7 @@ fn generate_board(mut commands: Commands) {
                             0.0,
                         ),
                         sprite: Sprite {
-                            color,
+                            color: get_tile_color(x, y),
                             custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
                             ..default()
                         },
@@ -178,11 +172,14 @@ fn handle_piece_selection(
     window: Query<&Window, With<PrimaryWindow>>,
     camera: Query<(&Camera, &GlobalTransform)>,
     pieces: Query<(Entity, &BoardPosition, &Player), With<Piece>>,
+    mut tiles: Query<(&Tile, &mut Sprite)>,
     current_player: Res<CurrentTurn>,
     mut selected_piece: ResMut<SelectedPiece>,
 ) {
     let window = window.get_single().unwrap();
     let (camera, camera_transform) = camera.get_single().unwrap();
+
+    let mut selected_piece_board_position = None;
 
     if buttons.just_pressed(MouseButton::Left) {
         if let Some(world_position) = window
@@ -196,6 +193,7 @@ fn handle_piece_selection(
                     && position.y as f32 == to_board_posistion(world_position.y)
                 {
                     selected_piece.0 = Some(entity);
+                    selected_piece_board_position = Some(position);
                     break;
                 } else {
                     selected_piece.0 = None;
@@ -203,7 +201,26 @@ fn handle_piece_selection(
             }
         }
     }
-    dbg!(selected_piece.0);
+
+    for (tile_pos, mut tile_sprite) in tiles.iter_mut() {
+        if let Some(selected_piece_board_position) = selected_piece_board_position {
+            if tile_pos.x == selected_piece_board_position.x
+                && tile_pos.y == selected_piece_board_position.y
+            {
+                tile_sprite.color = Color::YELLOW;
+            } else {
+                tile_sprite.color = get_tile_color(tile_pos.x, tile_pos.y);
+            }
+        }
+    }
+}
+
+fn get_tile_color(x: usize, y: usize) -> Color {
+    if (x % 2 == 1 && y % 2 != 1) || (x % 2 != 1 && y % 2 == 1) {
+        Color::LIME_GREEN
+    } else {
+        Color::GREEN
+    }
 }
 
 fn to_board_posistion(pos: f32) -> f32 {
