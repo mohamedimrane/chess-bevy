@@ -48,10 +48,14 @@ enum Turn {
     Black,
 }
 
+#[derive(Resource)]
+struct SelectedPiece(Option<Entity>);
+
 fn main() {
     App::new()
         .insert_resource(BoardPopulationDone(false))
         .insert_resource(CurrentTurn(Turn::White))
+        .insert_resource(SelectedPiece(None))
         .add_plugins(
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
@@ -72,6 +76,7 @@ fn main() {
         .add_startup_system(generate_board)
         .add_system(populate_board)
         .add_system(update_pieces_positions)
+        .add_system(handle_piece_selection)
         .run();
 }
 
@@ -164,6 +169,40 @@ fn update_pieces_positions(mut pieces: Query<(&mut Transform, &BoardPosition), W
     for (mut transform, position) in pieces.iter_mut() {
         transform.translation.x = ((position.x - 1) * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
         transform.translation.y = ((position.y - 1) * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
+    }
+}
+
+fn handle_piece_selection(
+    buttons: Res<Input<MouseButton>>,
+    window: Query<&Window, With<PrimaryWindow>>,
+    camera: Query<(&Camera, &GlobalTransform)>,
+    pieces: Query<(Entity, &BoardPosition), With<Piece>>,
+    mut selected_piece: ResMut<SelectedPiece>,
+) {
+    let window = window.get_single().unwrap();
+    let (camera, camera_transform) = camera.get_single().unwrap();
+
+    if buttons.just_pressed(MouseButton::Left) {
+        if let Some(world_position) = window
+            .cursor_position()
+            .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+            .map(|ray| ray.origin.truncate())
+        {
+            for (entity, position) in pieces.iter() {
+                if (position.x - 1) as f32 == (world_position.x.round() / PIECE_SIZE as f32).floor()
+                    && (position.y - 1) as f32
+                        == (world_position.y.round() / PIECE_SIZE as f32).floor()
+                {
+                    selected_piece.0 = Some(entity);
+
+                    // dbg!(selected_piece.0);
+                    break;
+                } else {
+                    selected_piece.0 = None;
+                    // dbg!(selected_piece.0);
+                }
+            }
+        }
     }
 }
 
