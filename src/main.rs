@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
+use bevy::{prelude::*, reflect::List, utils::HashMap, window::PrimaryWindow};
 
 const PIECE_SIZE: i32 = 60;
 const BOARD_SIZE: i32 = 8;
@@ -373,7 +373,89 @@ fn get_possible_moves(
             }
         },
         Piece::Bishop => {}
-        Piece::Rook => {}
+        Piece::Rook => match piece_player {
+            &Player::White => {
+                for i in 0..4 {
+                    let ex_pos = match i {
+                        0 => (0, 1),
+                        1 => (0, -1),
+                        2 => (1, 0),
+                        3 => (-1, 0),
+                        _ => unreachable!(),
+                    };
+
+                    let mut path = true;
+                    let mut chain = 1;
+                    while path {
+                        if !white_pieces_positions.contains(&&BoardPosition::new(
+                            piece_position.x + ex_pos.0 * chain,
+                            piece_position.y + ex_pos.1 * chain,
+                        )) && piece_position.x + ex_pos.0 * chain >= 0
+                            && piece_position.x + ex_pos.0 * chain <= 7
+                            && piece_position.y + ex_pos.1 * chain >= 0
+                            && piece_position.y + ex_pos.1 * chain <= 7
+                        {
+                            possible_moves.push((
+                                piece_position.x + ex_pos.0 * chain,
+                                piece_position.y + ex_pos.1 * chain,
+                            ));
+
+                            if black_pieces_positions.contains(&&BoardPosition::new(
+                                piece_position.x + ex_pos.0 * chain,
+                                piece_position.y + ex_pos.1 * chain,
+                            )) {
+                                path = false;
+                            }
+
+                            chain += 1;
+                        } else {
+                            path = false;
+                        }
+                    }
+                    
+                }
+            }
+            &Player::Black => {
+                for i in 0..4 {
+                    let ex_pos = match i {
+                        0 => (0, 1),
+                        1 => (0, -1),
+                        2 => (1, 0),
+                        3 => (-1, 0),
+                        _ => unreachable!(),
+                    };
+
+                    let mut path = true;
+                    let mut chain = 1;
+                    while path {
+                        if !black_pieces_positions.contains(&&BoardPosition::new(
+                            piece_position.x + ex_pos.0 * chain,
+                            piece_position.y + ex_pos.1 * chain,
+                        )) && piece_position.x + ex_pos.0 * chain >= 0
+                            && piece_position.x + ex_pos.0 * chain <= 7
+                            && piece_position.y + ex_pos.1 * chain >= 0
+                            && piece_position.y + ex_pos.1 * chain <= 7
+                        {
+                            possible_moves.push((
+                                piece_position.x + ex_pos.0 * chain,
+                                piece_position.y + ex_pos.1 * chain,
+                            ));
+
+                            if white_pieces_positions.contains(&&BoardPosition::new(
+                                piece_position.x + ex_pos.0 * chain,
+                                piece_position.y + ex_pos.1 * chain,
+                            )) {
+                                path = false;
+                            }
+
+                            chain += 1;
+                        } else {
+                            path = false;
+                        }
+                    }
+                }
+            }
+        },
     }
 
     possible_moves
