@@ -1,7 +1,7 @@
 use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 
-const PIECE_SIZE: usize = 60;
-const BOARD_SIZE: usize = 8;
+const PIECE_SIZE: i32 = 60;
+const BOARD_SIZE: i32 = 8;
 
 #[derive(Component, PartialEq, Eq, Hash)]
 enum Piece {
@@ -15,18 +15,18 @@ enum Piece {
 
 #[derive(Component)]
 struct Tile {
-    x: usize,
-    y: usize,
+    x: i32,
+    y: i32,
 }
 
 #[derive(Component, PartialEq, Eq)]
 struct BoardPosition {
-    x: usize,
-    y: usize,
+    x: i32,
+    y: i32,
 }
 
 impl BoardPosition {
-    fn new(x: usize, y: usize) -> Self {
+    fn new(x: i32, y: i32) -> Self {
         Self { x, y }
     }
 }
@@ -190,8 +190,8 @@ fn handle_piece_selection(
         {
             for (entity, position, player) in pieces.iter() {
                 if player == &current_player.0
-                    && position.x as f32 == to_board_posistion(world_position.x)
-                    && position.y as f32 == to_board_posistion(world_position.y)
+                    && position.x == to_board_posistion(world_position.x)
+                    && position.y == to_board_posistion(world_position.y)
                 {
                     selected_piece.0 = Some(entity);
                     selected_piece_board_position = Some(position);
@@ -248,7 +248,7 @@ fn display_possible_piece_movements(
     }
 }
 
-fn get_tile_color(x: usize, y: usize) -> Color {
+fn get_tile_color(x: i32, y: i32) -> Color {
     if (x % 2 == 1 && y % 2 != 1) || (x % 2 != 1 && y % 2 == 1) {
         Color::LIME_GREEN
     } else {
@@ -256,8 +256,8 @@ fn get_tile_color(x: usize, y: usize) -> Color {
     }
 }
 
-fn to_board_posistion(pos: f32) -> f32 {
-    (pos.round() / PIECE_SIZE as f32).floor()
+fn to_board_posistion(pos: f32) -> i32 {
+    (pos.round() / PIECE_SIZE as f32).floor() as i32
 }
 
 fn get_possible_moves(
@@ -266,7 +266,7 @@ fn get_possible_moves(
     piece_player: &Player,
     white_pieces_positions: Vec<&BoardPosition>,
     black_pieces_positions: Vec<&BoardPosition>,
-) -> Vec<(f32, f32)> {
+) -> Vec<(i32, i32)> {
     let mut possible_moves = Vec::new();
 
     match piece_type {
@@ -274,37 +274,35 @@ fn get_possible_moves(
         Piece::Queen => {}
         Piece::Knight => {
             let targets = [
-                (1.0, 2.0),
-                (-1.0, 2.0),
-                (2.0, 1.0),
-                (2.0, -1.0),
-                (1.0, -2.0),
-                (-1.0, -2.0),
-                (-2.0, 1.0),
-                (-2.0, -1.0),
+                (1, 2),
+                (-1, 2),
+                (2, 1),
+                (2, -1),
+                (1, -2),
+                (-1, -2),
+                (-2, 1),
+                (-2, -1),
             ];
 
             for i in 0..8 {
                 let target = (
-                    piece_position.x as f32 + targets[i].0,
-                    piece_position.y as f32 + targets[i].1,
+                    piece_position.x + targets[i].0,
+                    piece_position.y + targets[i].1,
                 );
 
-                if target.0 >= 0.0 && target.0 <= 7.0 && target.1 >= 0.0 && target.1 <= 7.0 {
+                if target.0 >= 0 && target.0 <= 7 && target.1 >= 0 && target.1 <= 7 {
                     match piece_player {
                         &Player::White => {
-                            if !white_pieces_positions.contains(&&BoardPosition::new(
-                                target.0 as usize,
-                                target.1 as usize,
-                            )) {
+                            if !white_pieces_positions
+                                .contains(&&BoardPosition::new(target.0, target.1))
+                            {
                                 possible_moves.push(target);
                             }
                         }
                         &Player::Black => {
-                            if !black_pieces_positions.contains(&&BoardPosition::new(
-                                target.0 as usize,
-                                target.1 as usize,
-                            )) {
+                            if !black_pieces_positions
+                                .contains(&&BoardPosition::new(target.0, target.1))
+                            {
                                 possible_moves.push(target);
                             }
                         }
@@ -320,26 +318,24 @@ fn get_possible_moves(
                         .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 1))
                     && piece_position.y < 7
                 {
-                    possible_moves.push((piece_position.x as f32, (piece_position.y + 1) as f32));
+                    possible_moves.push((piece_position.x, piece_position.y + 1));
                 } else if !white_pieces_positions
                     .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 2))
                     && !black_pieces_positions
                         .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 2))
                     && piece_position.y == 1
                 {
-                    possible_moves.push((piece_position.x as f32, (piece_position.y + 2) as f32));
+                    possible_moves.push((piece_position.x, piece_position.y + 2));
                 } else if black_pieces_positions.contains(&&BoardPosition::new(
                     piece_position.x + 1,
                     piece_position.y + 1,
                 )) {
-                    possible_moves
-                        .push(((piece_position.x + 1) as f32, (piece_position.y + 1) as f32));
+                    possible_moves.push((piece_position.x + 1, piece_position.y + 1));
                 } else if black_pieces_positions.contains(&&BoardPosition::new(
                     piece_position.x - 1,
                     piece_position.y + 1,
                 )) {
-                    possible_moves
-                        .push(((piece_position.x - 1) as f32, (piece_position.y + 1) as f32));
+                    possible_moves.push((piece_position.x - 1, piece_position.y + 1));
                 }
             }
             &Player::Black => {
@@ -349,26 +345,24 @@ fn get_possible_moves(
                         .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 1))
                     && piece_position.y > 0
                 {
-                    possible_moves.push((piece_position.x as f32, (piece_position.y - 1) as f32));
+                    possible_moves.push((piece_position.x, piece_position.y - 1));
                 } else if !white_pieces_positions
                     .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 2))
                     && !black_pieces_positions
                         .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 2))
                     && piece_position.y == 6
                 {
-                    possible_moves.push((piece_position.x as f32, (piece_position.y - 2) as f32));
+                    possible_moves.push((piece_position.x, piece_position.y - 2));
                 } else if white_pieces_positions.contains(&&BoardPosition::new(
                     piece_position.x + 1,
                     piece_position.y - 1,
                 )) {
-                    possible_moves
-                        .push(((piece_position.x + 1) as f32, (piece_position.y - 1) as f32));
+                    possible_moves.push((piece_position.x + 1, piece_position.y - 1));
                 } else if white_pieces_positions.contains(&&BoardPosition::new(
                     piece_position.x - 1,
                     piece_position.y - 1,
                 )) {
-                    possible_moves
-                        .push(((piece_position.x - 1) as f32, (piece_position.y - 1) as f32));
+                    possible_moves.push((piece_position.x - 1, piece_position.y - 1));
                 }
             }
         },
@@ -382,8 +376,8 @@ fn get_possible_moves(
 fn spawn_piece(
     piece_type: Piece,
     player: Player,
-    x: usize,
-    y: usize,
+    x: i32,
+    y: i32,
     texture_atlas: Handle<TextureAtlas>,
     index: usize,
     commands: &mut Commands,
