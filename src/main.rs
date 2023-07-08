@@ -14,10 +14,7 @@ enum Piece {
 }
 
 #[derive(Component)]
-struct Tile {
-    x: i32,
-    y: i32,
-}
+struct Tile;
 
 #[derive(Component, PartialEq, Eq)]
 struct BoardPosition {
@@ -128,11 +125,6 @@ fn generate_board(mut commands: Commands) {
             let piece = commands
                 .spawn((
                     SpriteBundle {
-                        transform: Transform::from_xyz(
-                            (x * PIECE_SIZE + PIECE_SIZE / 2) as f32,
-                            (y * PIECE_SIZE + PIECE_SIZE / 2) as f32,
-                            0.0,
-                        ),
                         sprite: Sprite {
                             color: get_tile_color(x, y),
                             custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
@@ -140,7 +132,8 @@ fn generate_board(mut commands: Commands) {
                         },
                         ..default()
                     },
-                    Tile { x, y },
+                    BoardPosition::new(x, y),
+                    Tile,
                 ))
                 .id();
 
@@ -161,7 +154,7 @@ fn populate_board(
     }
 }
 
-fn update_pieces_positions(mut pieces: Query<(&mut Transform, &BoardPosition), With<Piece>>) {
+fn update_pieces_positions(mut pieces: Query<(&mut Transform, &BoardPosition)>) {
     for (mut transform, position) in pieces.iter_mut() {
         transform.translation.x = (position.x * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
         transform.translation.y = (position.y * PIECE_SIZE + (PIECE_SIZE / 2)) as f32;
@@ -173,7 +166,7 @@ fn handle_piece_selection(
     window: Query<&Window, With<PrimaryWindow>>,
     camera: Query<(&Camera, &GlobalTransform)>,
     pieces: Query<(Entity, &BoardPosition, &Player), With<Piece>>,
-    mut tiles: Query<(&Tile, &mut Sprite)>,
+    mut tiles: Query<(&BoardPosition, &mut Sprite), With<Tile>>,
     current_player: Res<CurrentTurn>,
     mut selected_piece: ResMut<SelectedPiece>,
 ) {
@@ -200,6 +193,7 @@ fn handle_piece_selection(
                     selected_piece.0 = None;
                 }
             }
+
             for (tile_pos, mut tile_sprite) in tiles.iter_mut() {
                 if let Some(selected_piece_board_position) = selected_piece_board_position {
                     if tile_pos.x == selected_piece_board_position.x
