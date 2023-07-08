@@ -319,19 +319,25 @@ fn get_possible_moves(
                     && piece_position.y < 7
                 {
                     possible_moves.push((piece_position.x, piece_position.y + 1));
-                } else if !white_pieces_positions
+                }
+
+                if !white_pieces_positions
                     .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 2))
                     && !black_pieces_positions
                         .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 2))
                     && piece_position.y == 1
                 {
                     possible_moves.push((piece_position.x, piece_position.y + 2));
-                } else if black_pieces_positions.contains(&&BoardPosition::new(
+                }
+
+                if black_pieces_positions.contains(&&BoardPosition::new(
                     piece_position.x + 1,
                     piece_position.y + 1,
                 )) {
                     possible_moves.push((piece_position.x + 1, piece_position.y + 1));
-                } else if black_pieces_positions.contains(&&BoardPosition::new(
+                }
+
+                if black_pieces_positions.contains(&&BoardPosition::new(
                     piece_position.x - 1,
                     piece_position.y + 1,
                 )) {
@@ -346,19 +352,25 @@ fn get_possible_moves(
                     && piece_position.y > 0
                 {
                     possible_moves.push((piece_position.x, piece_position.y - 1));
-                } else if !white_pieces_positions
+                }
+
+                if !white_pieces_positions
                     .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 2))
                     && !black_pieces_positions
                         .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 2))
                     && piece_position.y == 6
                 {
                     possible_moves.push((piece_position.x, piece_position.y - 2));
-                } else if white_pieces_positions.contains(&&BoardPosition::new(
+                }
+
+                if white_pieces_positions.contains(&&BoardPosition::new(
                     piece_position.x + 1,
                     piece_position.y - 1,
                 )) {
                     possible_moves.push((piece_position.x + 1, piece_position.y - 1));
-                } else if white_pieces_positions.contains(&&BoardPosition::new(
+                }
+
+                if white_pieces_positions.contains(&&BoardPosition::new(
                     piece_position.x - 1,
                     piece_position.y - 1,
                 )) {
