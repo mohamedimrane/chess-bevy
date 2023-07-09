@@ -250,6 +250,10 @@ fn get_tile_color(x: i32, y: i32) -> Color {
     }
 }
 
+fn is_inside_board(x: i32, y: i32) -> bool {
+    x >= 0 && x <= 7 && y >= 0 && y <= 7
+}
+
 fn to_board_posistion(pos: f32) -> i32 {
     (pos.round() / PIECE_SIZE as f32).floor() as i32
 }
@@ -286,10 +290,7 @@ fn get_possible_moves(
 
                 let target = (piece_position.x + ex_pos.0, piece_position.y + ex_pos.1);
 
-                if target.0 >= 0
-                    && target.0 <= 7
-                    && target.1 >= 0
-                    && target.1 <= 7
+                if is_inside_board(target.0, target.1)
                     && !allies_positions.contains(&&BoardPosition::new(target.0, target.1))
                 {
                     possible_moves.push(target);
@@ -320,23 +321,17 @@ fn get_possible_moves(
                 );
 
                 while path {
-                    if !allies_positions.contains(&&BoardPosition::new(
+                    let target = (
                         piece_position.x + ex_pos.0 * chain,
                         piece_position.y + ex_pos.1 * chain,
-                    )) && piece_position.x + ex_pos.0 * chain >= 0
-                        && piece_position.x + ex_pos.0 * chain <= 7
-                        && piece_position.y + ex_pos.1 * chain >= 0
-                        && piece_position.y + ex_pos.1 * chain <= 7
-                    {
-                        possible_moves.push((
-                            piece_position.x + ex_pos.0 * chain,
-                            piece_position.y + ex_pos.1 * chain,
-                        ));
+                    );
 
-                        if enemies_positions.contains(&&BoardPosition::new(
-                            piece_position.x + ex_pos.0 * chain,
-                            piece_position.y + ex_pos.1 * chain,
-                        )) {
+                    if !allies_positions.contains(&&BoardPosition::new(target.0, target.1))
+                        && is_inside_board(target.0, target.1)
+                    {
+                        possible_moves.push(target);
+
+                        if enemies_positions.contains(&&BoardPosition::new(target.0, target.1)) {
                             path = false;
                         }
 
@@ -371,10 +366,7 @@ fn get_possible_moves(
                     piece_position.y + targets[i].1,
                 );
 
-                if target.0 >= 0
-                    && target.0 <= 7
-                    && target.1 >= 0
-                    && target.1 <= 7
+                if is_inside_board(target.1, target.1)
                     && !allies_positions.contains(&&BoardPosition::new(target.0, target.1))
                 {
                     possible_moves.push(target);
@@ -453,23 +445,17 @@ fn get_possible_moves(
                 );
 
                 while path {
-                    if !allies_positions.contains(&&BoardPosition::new(
+                    let target = (
                         piece_position.x + ex_pos.0 * chain,
                         piece_position.y + ex_pos.1 * chain,
-                    )) && piece_position.x + ex_pos.0 * chain >= 0
-                        && piece_position.x + ex_pos.0 * chain <= 7
-                        && piece_position.y + ex_pos.1 * chain >= 0
-                        && piece_position.y + ex_pos.1 * chain <= 7
-                    {
-                        possible_moves.push((
-                            piece_position.x + ex_pos.0 * chain,
-                            piece_position.y + ex_pos.1 * chain,
-                        ));
+                    );
 
-                        if enemies_positions.contains(&&BoardPosition::new(
-                            piece_position.x + ex_pos.0 * chain,
-                            piece_position.y + ex_pos.1 * chain,
-                        )) {
+                    if !allies_positions.contains(&&BoardPosition::new(target.0, target.1))
+                        && is_inside_board(target.0, target.1)
+                    {
+                        possible_moves.push(target);
+
+                        if enemies_positions.contains(&&BoardPosition::new(target.0, target.1)) {
                             path = false;
                         }
 
@@ -500,23 +486,17 @@ fn get_possible_moves(
                 );
 
                 while path {
-                    if !allies_positions.contains(&&BoardPosition::new(
+                    let target = (
                         piece_position.x + ex_pos.0 * chain,
                         piece_position.y + ex_pos.1 * chain,
-                    )) && piece_position.x + ex_pos.0 * chain >= 0
-                        && piece_position.x + ex_pos.0 * chain <= 7
-                        && piece_position.y + ex_pos.1 * chain >= 0
-                        && piece_position.y + ex_pos.1 * chain <= 7
-                    {
-                        possible_moves.push((
-                            piece_position.x + ex_pos.0 * chain,
-                            piece_position.y + ex_pos.1 * chain,
-                        ));
+                    );
 
-                        if enemies_positions.contains(&&BoardPosition::new(
-                            piece_position.x + ex_pos.0 * chain,
-                            piece_position.y + ex_pos.1 * chain,
-                        )) {
+                    if !allies_positions.contains(&&BoardPosition::new(target.0, target.1))
+                        && is_inside_board(target.0, target.1)
+                    {
+                        possible_moves.push(target);
+
+                        if enemies_positions.contains(&&BoardPosition::new(target.0, target.1)) {
                             path = false;
                         }
 
