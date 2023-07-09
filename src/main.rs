@@ -1,4 +1,4 @@
-use bevy::{prelude::*, reflect::List, utils::HashMap, window::PrimaryWindow};
+use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 
 const PIECE_SIZE: i32 = 60;
 const BOARD_SIZE: i32 = 8;
