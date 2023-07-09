@@ -16,6 +16,9 @@ enum Piece {
 #[derive(Component)]
 struct Tile;
 
+#[derive(Component)]
+struct Guide;
+
 #[derive(Component, PartialEq, Eq)]
 struct BoardPosition {
     x: i32,
@@ -120,6 +123,10 @@ fn generate_board(mut commands: Commands) {
         .spawn((TransformBundle::default(), VisibilityBundle::default()))
         .id();
 
+    let guide_board = commands
+        .spawn((TransformBundle::default(), VisibilityBundle::default()))
+        .id();
+
     for x in 0..BOARD_SIZE {
         for y in 0..BOARD_SIZE {
             let piece = commands
@@ -137,7 +144,24 @@ fn generate_board(mut commands: Commands) {
                 ))
                 .id();
 
+            let guide = commands
+                .spawn((
+                    SpriteBundle {
+                        sprite: Sprite {
+                            color: Color::GRAY,
+                            custom_size: Some(Vec2::splat(10.0)),
+                            ..default()
+                        },
+                        visibility: Visibility::Hidden,
+                        ..default()
+                    },
+                    BoardPosition::new(x, y),
+                    Guide,
+                ))
+                .id();
+
             commands.entity(board).add_child(piece);
+            commands.entity(guide_board).add_child(guide);
         }
     }
 }
@@ -214,6 +238,7 @@ fn handle_piece_selection(
 fn display_possible_piece_movements(
     selected_piece: Res<SelectedPiece>,
     pieces: Query<(&BoardPosition, &Player, &Piece)>,
+    mut guides: Query<(&BoardPosition, &mut Visibility), With<Guide>>,
 ) {
     if let Some(selected_piece_ent) = selected_piece.0 {
         let mut white_pieces_positions = Vec::new();
@@ -232,13 +257,27 @@ fn display_possible_piece_movements(
 
         let selected_piece = pieces.get(selected_piece_ent).unwrap();
 
-        dbg!(get_possible_moves(
+        let possible_moves = get_possible_moves(
             selected_piece.2,
             selected_piece.0,
             selected_piece.1,
             white_pieces_positions,
-            black_pieces_positions
-        ));
+            black_pieces_positions,
+        );
+
+        for (guide_position, mut guide_visibility) in guides.iter_mut() {
+            *guide_visibility = Visibility::Hidden;
+
+            for possible_move in possible_moves.iter() {
+                if possible_move.0 == guide_position.x && possible_move.1 == guide_position.y {
+                    *guide_visibility = Visibility::Visible;
+                }
+            }
+        }
+    } else {
+        for (_, mut guide_visibility) in guides.iter_mut() {
+            *guide_visibility = Visibility::Hidden;
+        }
     }
 }
 
