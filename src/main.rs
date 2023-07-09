@@ -300,74 +300,58 @@ fn get_possible_moves(
                 }
             }
         }
-        Piece::Pawn => match piece_player {
-            &Player::White => {
-                if !white_pieces_positions
-                    .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 1))
-                    && !black_pieces_positions
-                        .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 1))
-                    && piece_position.y < 7
-                {
-                    possible_moves.push((piece_position.x, piece_position.y + 1));
-                }
+        Piece::Pawn => {
+            let (allies_positions, enemies_positions) = get_allies_and_enemies(
+                piece_player,
+                &white_pieces_positions,
+                &black_pieces_positions,
+            );
+            let y_modifier = match piece_player {
+                &Player::White => 1,
+                &Player::Black => -1,
+            };
+            let starting_y = match piece_player {
+                &Player::White => 1,
+                &Player::Black => 6,
+            };
 
-                if !white_pieces_positions
-                    .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 2))
-                    && !black_pieces_positions
-                        .contains(&&BoardPosition::new(piece_position.x, piece_position.y + 2))
-                    && piece_position.y == 1
-                {
-                    possible_moves.push((piece_position.x, piece_position.y + 2));
-                }
-
-                if black_pieces_positions.contains(&&BoardPosition::new(
-                    piece_position.x + 1,
-                    piece_position.y + 1,
-                )) {
-                    possible_moves.push((piece_position.x + 1, piece_position.y + 1));
-                }
-
-                if black_pieces_positions.contains(&&BoardPosition::new(
-                    piece_position.x - 1,
-                    piece_position.y + 1,
-                )) {
-                    possible_moves.push((piece_position.x - 1, piece_position.y + 1));
-                }
+            if !allies_positions.contains(&&BoardPosition::new(
+                piece_position.x,
+                piece_position.y + 1 * y_modifier,
+            )) && !enemies_positions.contains(&&BoardPosition::new(
+                piece_position.x,
+                piece_position.y + 1 * y_modifier,
+            )) && piece_position.y < 7
+                && piece_position.y > 0
+            {
+                possible_moves.push((piece_position.x, piece_position.y + 1 * y_modifier));
             }
-            &Player::Black => {
-                if !white_pieces_positions
-                    .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 1))
-                    && !black_pieces_positions
-                        .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 1))
-                    && piece_position.y > 0
-                {
-                    possible_moves.push((piece_position.x, piece_position.y - 1));
-                }
 
-                if !white_pieces_positions
-                    .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 2))
-                    && !black_pieces_positions
-                        .contains(&&BoardPosition::new(piece_position.x, piece_position.y - 2))
-                    && piece_position.y == 6
-                {
-                    possible_moves.push((piece_position.x, piece_position.y - 2));
-                }
-
-                if white_pieces_positions.contains(&&BoardPosition::new(
-                    piece_position.x + 1,
-                    piece_position.y - 1,
-                )) {
-                    possible_moves.push((piece_position.x + 1, piece_position.y - 1));
-                }
-
-                if white_pieces_positions.contains(&&BoardPosition::new(
-                    piece_position.x - 1,
-                    piece_position.y - 1,
-                )) {
-                    possible_moves.push((piece_position.x - 1, piece_position.y - 1));
-                }
+            if !allies_positions.contains(&&BoardPosition::new(
+                piece_position.x,
+                piece_position.y + 2 * y_modifier,
+            )) && !enemies_positions.contains(&&BoardPosition::new(
+                piece_position.x,
+                piece_position.y + 2 * y_modifier,
+            )) && piece_position.y == starting_y
+            {
+                possible_moves.push((piece_position.x, piece_position.y + 2 * y_modifier));
             }
-        },
+
+            if enemies_positions.contains(&&BoardPosition::new(
+                piece_position.x + 1,
+                piece_position.y + 1 * y_modifier,
+            )) {
+                possible_moves.push((piece_position.x + 1, piece_position.y + 1 * y_modifier));
+            }
+
+            if enemies_positions.contains(&&BoardPosition::new(
+                piece_position.x - 1,
+                piece_position.y + 1 * y_modifier,
+            )) {
+                possible_moves.push((piece_position.x - 1, piece_position.y + 1 * y_modifier));
+            }
+        }
         Piece::Bishop => {}
         Piece::Rook => {
             for i in 0..4 {
