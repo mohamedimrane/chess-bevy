@@ -264,7 +264,38 @@ fn get_possible_moves(
     let mut possible_moves = Vec::new();
 
     match piece_type {
-        Piece::King => {}
+        Piece::King => {
+            for i in 0..8 {
+                let ex_pos = match i {
+                    0 => (1, 0),
+                    1 => (1, 1),
+                    2 => (0, 1),
+                    3 => (-1, 1),
+                    4 => (-1, 0),
+                    5 => (-1, -1),
+                    6 => (0, -1),
+                    7 => (1, -1),
+                    _ => unreachable!(),
+                };
+
+                let (allies_positions, _) = get_allies_and_enemies(
+                    piece_player,
+                    &white_pieces_positions,
+                    &black_pieces_positions,
+                );
+
+                let target = (piece_position.x + ex_pos.0, piece_position.y + ex_pos.1);
+
+                if target.0 >= 0
+                    && target.0 <= 7
+                    && target.1 >= 0
+                    && target.1 <= 7
+                    && !allies_positions.contains(&&BoardPosition::new(target.0, target.1))
+                {
+                    possible_moves.push(target);
+                }
+            }
+        }
         Piece::Queen => {
             for i in 0..8 {
                 let ex_pos = match i {
