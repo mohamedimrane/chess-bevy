@@ -278,29 +278,25 @@ fn get_possible_moves(
                 (-2, -1),
             ];
 
+            let (allies_positions, _) = get_allies_and_enemies(
+                piece_player,
+                &white_pieces_positions,
+                &black_pieces_positions,
+            );
+
             for i in 0..8 {
                 let target = (
                     piece_position.x + targets[i].0,
                     piece_position.y + targets[i].1,
                 );
 
-                if target.0 >= 0 && target.0 <= 7 && target.1 >= 0 && target.1 <= 7 {
-                    match piece_player {
-                        &Player::White => {
-                            if !white_pieces_positions
-                                .contains(&&BoardPosition::new(target.0, target.1))
-                            {
-                                possible_moves.push(target);
-                            }
-                        }
-                        &Player::Black => {
-                            if !black_pieces_positions
-                                .contains(&&BoardPosition::new(target.0, target.1))
-                            {
-                                possible_moves.push(target);
-                            }
-                        }
-                    }
+                if target.0 >= 0
+                    && target.0 <= 7
+                    && target.1 >= 0
+                    && target.1 <= 7
+                    && !allies_positions.contains(&&BoardPosition::new(target.0, target.1))
+                {
+                    possible_moves.push(target);
                 }
             }
         }
@@ -412,7 +408,6 @@ fn get_possible_moves(
                             path = false;
                         }
                     }
-                    
                 }
             }
             &Player::Black => {
@@ -459,6 +454,28 @@ fn get_possible_moves(
     }
 
     possible_moves
+}
+
+fn get_allies_and_enemies<'a>(
+    piece_player: &Player,
+    white_pieces_positions: &'a Vec<&'a BoardPosition>,
+    black_pieces_positions: &'a Vec<&'a BoardPosition>,
+) -> (&'a Vec<&'a BoardPosition>, &'a Vec<&'a BoardPosition>) {
+    let allies_positions;
+    let enemies_positions;
+
+    match piece_player {
+        &Player::White => {
+            allies_positions = white_pieces_positions;
+            enemies_positions = black_pieces_positions;
+        }
+        &Player::Black => {
+            allies_positions = black_pieces_positions;
+            enemies_positions = white_pieces_positions;
+        }
+    }
+
+    (allies_positions, enemies_positions)
 }
 
 fn spawn_piece(
