@@ -352,7 +352,53 @@ fn get_possible_moves(
                 possible_moves.push((piece_position.x - 1, piece_position.y + 1 * y_modifier));
             }
         }
-        Piece::Bishop => {}
+        Piece::Bishop => {
+            for i in 0..4 {
+                let ex_pos = match i {
+                    0 => (1, 1),
+                    1 => (1, -1),
+                    2 => (-1, 1),
+                    3 => (-1, -1),
+                    _ => unreachable!(),
+                };
+
+                let mut path = true;
+                let mut chain = 1;
+
+                let (allies_positions, enemies_positions) = get_allies_and_enemies(
+                    piece_player,
+                    &white_pieces_positions,
+                    &black_pieces_positions,
+                );
+
+                while path {
+                    if !allies_positions.contains(&&BoardPosition::new(
+                        piece_position.x + ex_pos.0 * chain,
+                        piece_position.y + ex_pos.1 * chain,
+                    )) && piece_position.x + ex_pos.0 * chain >= 0
+                        && piece_position.x + ex_pos.0 * chain <= 7
+                        && piece_position.y + ex_pos.1 * chain >= 0
+                        && piece_position.y + ex_pos.1 * chain <= 7
+                    {
+                        possible_moves.push((
+                            piece_position.x + ex_pos.0 * chain,
+                            piece_position.y + ex_pos.1 * chain,
+                        ));
+
+                        if enemies_positions.contains(&&BoardPosition::new(
+                            piece_position.x + ex_pos.0 * chain,
+                            piece_position.y + ex_pos.1 * chain,
+                        )) {
+                            path = false;
+                        }
+
+                        chain += 1;
+                    } else {
+                        path = false;
+                    }
+                }
+            }
+        }
         Piece::Rook => {
             for i in 0..4 {
                 let ex_pos = match i {
