@@ -77,6 +77,7 @@ fn main() {
         .add_startup_system(generate_board)
         .add_system(populate_board)
         .add_system(update_pieces_positions)
+        .add_system(handle_piece_movement)
         .add_system(handle_piece_selection)
         .add_system(display_possible_piece_movements)
         .run();
@@ -255,12 +256,13 @@ fn display_possible_piece_movements(
             }
         }
 
-        let selected_piece = pieces.get(selected_piece_ent).unwrap();
+        let (selected_piece_position, selected_piece_player, selected_piece_type) =
+            pieces.get(selected_piece_ent).unwrap();
 
         let possible_moves = get_possible_moves(
-            selected_piece.2,
-            selected_piece.0,
-            selected_piece.1,
+            selected_piece_type,
+            selected_piece_position,
+            selected_piece_player,
             white_pieces_positions,
             black_pieces_positions,
         );
@@ -277,6 +279,80 @@ fn display_possible_piece_movements(
     } else {
         for (_, mut guide_visibility) in guides.iter_mut() {
             *guide_visibility = Visibility::Hidden;
+        }
+    }
+}
+
+fn handle_piece_movement(
+    buttons: Res<Input<MouseButton>>,
+    window: Query<&Window, With<PrimaryWindow>>,
+    camera: Query<(&Camera, &GlobalTransform)>,
+    pieces: Query<(&BoardPosition, &Player, &Piece)>,
+    mut selected_piece: ResMut<SelectedPiece>,
+) {
+    if let Some(selected_piece_ent) = selected_piece.0 {
+        let (selected_piece_position, selected_piece_player, selected_piece_type) =
+            pieces.get(selected_piece_ent).unwrap();
+
+        let mut white_pieces_positions = Vec::new();
+        let mut black_pieces_positions = Vec::new();
+
+        for (piece_board_position, piece_player, _) in pieces.iter() {
+            match piece_player {
+                &Player::White => {
+                    white_pieces_positions.push(piece_board_position);
+                }
+                &Player::Black => {
+                    black_pieces_positions.push(piece_board_position);
+                }
+            }
+        }
+
+        let possible_moves = get_possible_moves(
+            selected_piece_type,
+            selected_piece_position,
+            selected_piece_player,
+            white_pieces_positions,
+            black_pieces_positions,
+        );
+
+        let window = window.get_single().unwrap();
+        let (camera, camera_transform) = camera.get_single().unwrap();
+
+        if buttons.just_pressed(MouseButton::Left) {
+            if let Some(world_position) = window
+                .cursor_position()
+                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+                .map(|ray| ray.origin.truncate())
+            {
+                for (piece_position, piece_player, _) in pieces.iter() {
+                    if piece_player == selected_piece_player
+                        && piece_position.x == to_board_posistion(world_position.x)
+                        && piece_position.y == to_board_posistion(world_position.y)
+                    {
+                        return;
+                    }
+
+                    if !possible_moves.contains(&(
+                        to_board_posistion(world_position.x),
+                        to_board_posistion(world_position.y),
+                    )) {
+                        return;
+                    }
+
+                    for possible_move in possible_moves.iter() {
+                        if possible_move.0 == to_board_posistion(world_position.x)
+                            && possible_move.1 == to_board_posistion(world_position.y)
+                        {
+                            println!("moved");
+                            // TODO: somehow mutate these values
+                            // selected_piece_position.x = possible_move.0;
+                            // selected_piece_position.y = possible_move.1;
+                            selected_piece.0 = None;
+                        }
+                    }
+                }
+            }
         }
     }
 }
