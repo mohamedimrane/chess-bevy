@@ -2,6 +2,9 @@ use bevy::{prelude::*, utils::HashMap, window::PrimaryWindow};
 
 const PIECE_SIZE: i32 = 60;
 const BOARD_SIZE: i32 = 8;
+const TILE_Z_INDEX: f32 = 0.0;
+const PIECE_Z_INDEX: f32 = 1.0;
+const GUIDE_Z_INDEX: f32 = 2.0;
 
 #[derive(Component, PartialEq, Eq, Hash)]
 enum Piece {
@@ -114,7 +117,7 @@ fn spawn_camera(mut commands: Commands, window: Query<&Window, With<PrimaryWindo
     let window = window.get_single().unwrap();
 
     commands.spawn(Camera2dBundle {
-        transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
+        transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 999.0),
         ..default()
     });
 }
@@ -130,7 +133,7 @@ fn generate_board(mut commands: Commands) {
 
     for x in 0..BOARD_SIZE {
         for y in 0..BOARD_SIZE {
-            let piece = commands
+            let tile = commands
                 .spawn((
                     SpriteBundle {
                         sprite: Sprite {
@@ -138,6 +141,7 @@ fn generate_board(mut commands: Commands) {
                             custom_size: Some(Vec2::splat(PIECE_SIZE as f32)),
                             ..default()
                         },
+                        transform: Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX),
                         ..default()
                     },
                     BoardPosition::new(x, y),
@@ -154,6 +158,7 @@ fn generate_board(mut commands: Commands) {
                             ..default()
                         },
                         visibility: Visibility::Hidden,
+                        transform: Transform::from_xyz(0.0, 0.0, GUIDE_Z_INDEX),
                         ..default()
                     },
                     BoardPosition::new(x, y),
@@ -161,7 +166,7 @@ fn generate_board(mut commands: Commands) {
                 ))
                 .id();
 
-            commands.entity(board).add_child(piece);
+            commands.entity(board).add_child(tile);
             commands.entity(guide_board).add_child(guide);
         }
     }
@@ -666,6 +671,7 @@ fn spawn_piece(
                 ..default()
             },
             texture_atlas,
+            transform: Transform::from_xyz(0.0, 0.0, PIECE_Z_INDEX),
             ..default()
         },
         piece_type,
